@@ -1,0 +1,29 @@
+---
+/**
+ * LanguageSelector.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Links de cambio de idioma. Usa <a> puro, sin JS, para mantener Zero JS.
+ */
+import type { Lang } from '@/utils/i18n';
+import { getAlternateUrl } from '@/utils/i18n';
+
+interface Props {
+  currentLang: Lang;
+}
+
+const { currentLang } = Astro.props;
+const altLang   = currentLang === 'es' ? 'en' : 'es';
+const altLabel  = currentLang === 'es' ? 'EN' : 'ES';
+const altHref   = getAlternateUrl(Astro.url, altLang);
+const ariaLabel = currentLang === 'es' ? 'Switch to English' : 'Cambiar a Español';
+---
+
+<a
+  href={altHref}
+  aria-label={ariaLabel}
+  class="flex h-9 items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-3 text-xs font-semibold tracking-widest text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)]"
+>
+  <span aria-hidden="true" class="opacity-60">{currentLang.toUpperCase()}</span>
+  <span aria-hidden="true" class="text-[var(--border)]">/</span>
+  <span>{altLabel}</span>
+</a>

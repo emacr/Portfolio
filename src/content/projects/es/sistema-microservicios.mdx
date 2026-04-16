@@ -1,0 +1,47 @@
+---
+title: "Sistema de Microservicios E-Commerce"
+description: "Plataforma distribuida de alta disponibilidad para comercio electrónico, diseñada para escalar a 100K usuarios concurrentes con zero-downtime deployments."
+date: 2024-03-15
+image: "../../../assets/arch-microservices.png"
+stack:
+  - "Node.js"
+  - "TypeScript"
+  - "Kubernetes"
+  - "PostgreSQL"
+  - "RabbitMQ"
+  - "Redis"
+  - "Docker"
+  - "Prometheus"
+links:
+  github: "https://github.com/emacr/ecommerce-microservices"
+featured: true
+architectureDiagram: "arch-microservices.png"
+nfr:
+  - "Disponibilidad: SLA del 99.95% (< 4.38h downtime/año)"
+  - "Latencia P99 < 200ms para operaciones de lectura bajo carga de 50K RPS"
+  - "Escalabilidad horizontal automática (HPA) con métricas custom de Kubernetes"
+  - "MTTR < 15 minutos ante fallos de un servicio individual"
+  - "Seguridad: Autenticación JWT + mTLS entre servicios internos"
+  - "Observabilidad: Trazabilidad distribuida end-to-end con OpenTelemetry"
+adrs:
+  - title: "ADR-001: Mensajería asíncrona con RabbitMQ sobre Kafka"
+    context: "El sistema necesitaba comunicación desacoplada entre Order Service y Notification Service. Se evaluaron RabbitMQ y Kafka para el volumen de mensajes proyectado."
+    decision: "Se eligió RabbitMQ con colas duraderas y dead-letter queues. El volumen proyectado (< 5K msg/s) no justificaba la complejidad operacional de Kafka y su curva de aprendizaje del equipo."
+    consequences: "Menor complejidad de operación y despliegue. Trade-off: si el volumen crece 10x, se requerirá migrar a Kafka. Se documentó el trigger de migración con métricas."
+  - title: "ADR-002: PostgreSQL por servicio vs. base de datos compartida"
+    context: "Se debatió entre una BD compartida (más simple) y BD por microservicio (Database-per-Service pattern) para garantizar el desacoplamiento real entre dominios."
+    decision: "Cada microservicio tiene su propia instancia de PostgreSQL en un namespace de Kubernetes dedicado. La comunicación cross-servicio se hace exclusivamente por API/eventos."
+    consequences: "Fuerte aislamiento de fallos y posibilidad de escalar schemas independientemente. Costo: las transacciones distribuidas requieren Saga pattern, aumentando la complejidad de rollback."
+  - title: "ADR-003: API Gateway con Kong sobre implementación custom"
+    context: "El API Gateway necesitaba manejar rate limiting, autenticación OAuth2, y logging centralizado. Se evaluó construirlo en Express.js vs. usar Kong Gateway."
+    decision: "Se adoptó Kong Gateway con plugins declarativos. La madurez del ecosistema y plugins existentes (rate-limiting, jwt, prometheus) reducía el tiempo de desarrollo en ~3 sprints."
+    consequences: "Velocidad de entrega y robustez probada en producción. Dependencia de un vendor open-source gestionada con helm charts versionados para reproducibilidad."
+---
+
+## Contexto del Proyecto
+
+Este proyecto resolvió el problema de escalabilidad de una plataforma monolítica que alcanzaba sus límites durante eventos de alta demanda (Black Friday, lanzamientos de productos). La migración a microservicios permitió escalar servicios críticos de forma independiente.
+
+## Desafíos Técnicos Clave
+
+El principal reto fue la **migración incremental** del monolito, usando el patrón Strangler Fig para extraer servicios uno a uno sin interrumpir operaciones de producción durante 6 meses.

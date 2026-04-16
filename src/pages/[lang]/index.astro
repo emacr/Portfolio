@@ -1,0 +1,84 @@
+---
+/**
+ * src/pages/[lang]/index.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Página de inicio por idioma. Genera rutas: /es/ y /en/
+ * Consume bioscopio y proyectos destacados desde Content Collections.
+ */
+import MainLayout    from '@/layouts/MainLayout.astro';
+import Hero          from '@/components/shared/Hero.astro';
+import SkillsGrid    from '@/components/shared/SkillsGrid.astro';
+import ProjectCard   from '@/components/projects/ProjectCard.astro';
+import ContactForm   from '@/components/shared/ContactForm.astro';
+import { useTranslations, SUPPORTED_LANGS, type Lang } from '@/utils/i18n';
+import { getBio, getFeaturedProjects } from '@/utils/content';
+
+export async function getStaticPaths() {
+  return SUPPORTED_LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params as { lang: Lang };
+const t = useTranslations(lang);
+
+// ─── Datos desde Content Collections ─────────────────────────────────────────
+const bio      = await getBio(lang);
+const featured = await getFeaturedProjects(lang);
+
+// ─── Author para JSON-LD ──────────────────────────────────────────────────────
+const author = {
+  name:    bio.data.name,
+  role:    bio.data.role,
+  siteUrl: 'https://emacr.github.io',
+  github:  bio.data.socials.github,
+  linkedin:bio.data.socials.linkedin,
+};
+---
+
+<MainLayout
+  title={bio.data.role}
+  description={bio.data.summary}
+  lang={lang}
+  author={author}
+>
+  <!-- Hero: nombre, rol, CTAs -->
+  <Hero lang={lang} bio={bio} />
+
+  <!-- Skills Grid -->
+  <SkillsGrid lang={lang} skills={bio.data.skills} />
+
+  <!-- Proyectos Destacados -->
+  {featured.length > 0 && (
+    <section
+      class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8"
+      aria-labelledby="featured-heading"
+    >
+      <div class="mb-10">
+        <h2
+          id="featured-heading"
+          class="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl"
+        >
+          {t('projects.title')}
+        </h2>
+        <p class="mt-2 text-sm text-[var(--text-muted)]">
+          {t('projects.subtitle')}
+        </p>
+      </div>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {featured.map((project) => (
+          <ProjectCard project={project} lang={lang} />
+        ))}
+      </div>
+      <div class="mt-10 text-center">
+        <a
+          href={`/${lang}/projects`}
+          class="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-5 py-2.5 text-sm font-medium text-[var(--text)] transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)]"
+        >
+          {t('projects.title')} →
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- Formulario de Contacto -->
+  <ContactForm lang={lang} />
+</MainLayout>

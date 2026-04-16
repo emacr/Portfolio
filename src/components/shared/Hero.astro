@@ -1,0 +1,98 @@
+---
+/**
+ * Hero.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Sección principal del portfolio. Muestra nombre, rol, resumen y CTAs.
+ * Animaciones con CSS puro (fadeInUp + stagger).
+ */
+import type { Lang } from '@/utils/i18n';
+import { useTranslations } from '@/utils/i18n';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  lang: Lang;
+  bio:  CollectionEntry<'bio'>;
+}
+
+const { lang, bio } = Astro.props;
+const t = useTranslations(lang);
+const { name, role, summary } = bio.data;
+---
+
+<section
+  class="relative mx-auto flex min-h-[calc(100dvh-4rem)] max-w-6xl flex-col justify-center px-4 py-20 sm:px-6 lg:px-8"
+  aria-labelledby="hero-heading"
+>
+  <!-- Glow decorativo de fondo -->
+  <div
+    class="pointer-events-none absolute inset-0 overflow-hidden"
+    aria-hidden="true"
+  >
+    <div class="absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-[var(--accent)]/5 blur-3xl" />
+    <div class="absolute bottom-0 right-0 h-[300px] w-[300px] rounded-full bg-[var(--accent)]/3 blur-3xl" />
+  </div>
+
+  <div class="relative">
+    <!-- Label de disponibilidad -->
+    <div class="animate-fade-in-up mb-6" style="animation-delay:0.05s">
+      <span class="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
+        {t('hero.available')}
+      </span>
+    </div>
+
+    <!-- Saludo + Nombre -->
+    <div class="animate-fade-in-up" style="animation-delay:0.1s">
+      <p class="mb-1 text-lg text-[var(--text-muted)]">{t('hero.greeting')}</p>
+      <h1
+        id="hero-heading"
+        class="text-5xl font-bold tracking-tight text-[var(--text)] sm:text-6xl lg:text-7xl"
+      >
+        {name}
+        <span class="text-[var(--accent)]">.</span>
+      </h1>
+    </div>
+
+    <!-- Rol -->
+    <div class="animate-fade-in-up mt-3" style="animation-delay:0.15s">
+      <p class="text-xl font-medium text-[var(--text-muted)] sm:text-2xl">
+        {role}
+      </p>
+    </div>
+
+    <!-- Summary -->
+    <div class="animate-fade-in-up mt-6 max-w-2xl" style="animation-delay:0.2s">
+      <p class="text-base leading-relaxed text-[var(--text-muted)] sm:text-lg">
+        {summary}
+      </p>
+    </div>
+
+    <!-- CTAs -->
+    <div class="animate-fade-in-up mt-10 flex flex-wrap gap-4" style="animation-delay:0.25s">
+      <a
+        href={`/${lang}/projects`}
+        id="hero-cta-projects"
+        class="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[var(--accent)]/20 transition-all duration-200 hover:bg-[var(--accent-hover)] hover:shadow-lg hover:shadow-[var(--accent)]/30 hover:-translate-y-0.5"
+      >
+        {t('hero.cta_projects')}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+      <a
+        href={`/${lang}/#contact`}
+        id="hero-cta-contact"
+        class="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-5 py-2.5 text-sm font-semibold text-[var(--text)] transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:-translate-y-0.5"
+      >
+        {t('hero.cta_contact')}
+      </a>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div class="animate-fade-in mt-16 hidden md:block" style="animation-delay:0.6s" aria-hidden="true">
+      <div class="flex flex-col items-start gap-2">
+        <div class="h-10 w-px bg-gradient-to-b from-transparent to-[var(--border)]" />
+      </div>
+    </div>
+  </div>
+</section>

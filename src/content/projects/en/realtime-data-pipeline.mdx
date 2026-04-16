@@ -1,0 +1,42 @@
+---
+title: "Real-Time Data Pipeline"
+description: "Ingestion and processing infrastructure for real-time analytics, processing 2M events/day with end-to-end latency under 1 second."
+date: 2023-11-20
+image: "../../../assets/arch-pipeline.png"
+stack:
+  - "Apache Kafka"
+  - "Python"
+  - "Apache Flink"
+  - "PostgreSQL"
+  - "MinIO"
+  - "dbt"
+  - "Metabase"
+  - "Terraform"
+links:
+  github: "https://github.com/emacr/realtime-pipeline"
+featured: false
+architectureDiagram: "arch-pipeline.png"
+nfr:
+  - "Throughput: 2M events/day with peaks of 5K events/second"
+  - "End-to-end latency < 1 second from ingestion to dashboard"
+  - "Data durability: 3x Kafka replication, 30-day retention"
+  - "Exactly-once semantics in stream processing"
+  - "Automatic backpressure to absorb 3x nominal traffic spikes"
+adrs:
+  - title: "ADR-001: Flink over Spark Streaming for stateful processing"
+    context: "The pipeline required complex window operations and per-session state. Apache Spark Structured Streaming and Apache Flink were compared for stateful stream processing."
+    decision: "Apache Flink was chosen for its stream-first programming model (not micro-batches), native exactly-once semantics support, and better performance on stateful operations with RocksDB backend."
+    consequences: "Lower latency (true streaming vs. Spark's 1s micro-batches). Steeper learning curve for the team. 2 weeks of enablement were invested before production."
+  - title: "ADR-002: Self-hosted MinIO as S3-compatible Data Lake"
+    context: "Processed data needed scalable and cost-effective storage. AWS S3, Google Cloud Storage, and self-hosted MinIO were evaluated for the data lake."
+    decision: "Self-hosted MinIO on bare-metal was chosen for cost control and data sovereignty. The S3-compatible API allowed using the same tooling ecosystem (dbt, Metabase) without changes."
+    consequences: "~70% reduction in storage costs vs. managed S3. Additional operational responsibility for backup, mitigated with restic + automatic rotation."
+---
+
+## Project Context
+
+The need arose from a retail client making business decisions with day-old data. This pipeline eliminated that lag, enabling real-time price and stock adjustments based on current purchase behavior.
+
+## Business Impact
+
+Real-time analytics reduced the response time to inventory anomalies from **4 hours to 45 seconds**, improving conversion by 12% in the first 30 days.

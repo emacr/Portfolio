@@ -1,0 +1,140 @@
+---
+/**
+ * BaseHead.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Gestiona todo el <head>: meta tags, Open Graph, hreflang, anti-FOUC y JSON-LD.
+ * CRITICAL: El script de tema debe ser inline y estar ANTES de cualquier contenido
+ * visible para evitar el Flash of Unstyled Content (FOUC).
+ */
+import type { Lang } from '@/utils/i18n';
+import { getAlternateUrl } from '@/utils/i18n';
+
+interface Props {
+  title:       string;
+  description: string;
+  lang:        Lang;
+  ogImage?:    string;
+  /** Datos del autor para JSON-LD. Opcionales; si no se pasan, no se emite el grafo Person. */
+  author?: {
+    name:     string;
+    role:     string;
+    siteUrl:  string;
+    github:   string;
+    linkedin: string;
+    imageUrl?: string;
+  };
+}
+
+const {
+  title,
+  description,
+  lang,
+  ogImage  = '/og-default.png',
+  author,
+} = Astro.props;
+
+const SITE_URL = 'https://emacr.github.io';
+const canonicalUrl = new URL(Astro.url.pathname, SITE_URL).href;
+
+// ─── hreflang alternates ─────────────────────────────────────────────────────
+const altLang  = lang === 'es' ? 'en' : 'es';
+const altHref  = new URL(getAlternateUrl(Astro.url, altLang), SITE_URL).href;
+const selfHref = canonicalUrl;
+
+// ─── Construcción del JSON-LD ─────────────────────────────────────────────────
+// Se usa JSON.stringify para serialización segura; NUNCA interpolar directamente.
+const jsonLdGraphs: object[] = [
+  {
+    '@type': 'WebSite',
+    '@id':   `${SITE_URL}/#website`,
+    url:     SITE_URL,
+    name:    'Emacr Portfolio',
+    inLanguage: lang === 'es' ? 'es-MX' : 'en-US',
+  },
+];
+
+if (author) {
+  jsonLdGraphs.push({
+    '@type':       'Person',
+    '@id':         `${SITE_URL}/#person`,
+    name:          author.name,
+    jobTitle:      author.role,
+    url:           author.siteUrl,
+    ...(author.imageUrl && {
+      image: {
+        '@type': 'ImageObject',
+        url:     author.imageUrl,
+      },
+    }),
+    sameAs: [author.github, author.linkedin].filter(Boolean),
+    mainEntityOfPage: { '@id': `${SITE_URL}/#website` },
+  });
+}
+
+const jsonLdString = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph':   jsonLdGraphs,
+});
+
+const fullTitle = `${title} | Emacr Portfolio`;
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- ─── SEO Básico ─────────────────────────────────────────────────────────── -->
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- ─── Open Graph ────────────────────────────────────────────────────────── -->
+<meta property="og:type"        content="website" />
+<meta property="og:url"         content={canonicalUrl} />
+<meta property="og:title"       content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image"       content={new URL(ogImage, SITE_URL).href} />
+<meta property="og:locale"      content={lang === 'es' ? 'es_MX' : 'en_US'} />
+<meta property="og:site_name"   content="Emacr Portfolio" />
+
+<!-- ─── Twitter Card ──────────────────────────────────────────────────────── -->
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image"       content={new URL(ogImage, SITE_URL).href} />
+
+<!-- ─── hreflang (SEO multilenguaje) ─────────────────────────────────────── -->
+<link rel="alternate" hreflang={lang}    href={selfHref} />
+<link rel="alternate" hreflang={altLang} href={altHref} />
+<link rel="alternate" hreflang="x-default" href={new URL('/es/', SITE_URL).href} />
+
+<!-- ─── Favicon ───────────────────────────────────────────────────────────── -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+<!-- ─── JSON-LD Structured Data ───────────────────────────────────────────── -->
+<!--
+  ARQUITECTURA: Se emiten dos grafos Schema.org en un solo bloque:
+  1. WebSite: identifica el sitio para motores de búsqueda.
+  2. Person: entidad del autor (solo si se pasan los datos de author).
+  La serialización con JSON.stringify previene inyección XSS.
+-->
+<script type="application/ld+json" set:html={jsonLdString}></script>
+
+<!-- ─── Anti-FOUC Script: Tema oscuro/claro ──────────────────────────────── -->
+<!--
+  CRITICAL: Este script DEBE ejecutarse sincrónicamente, antes de que el navegador
+  pinte cualquier píxel. Aplica la clase 'dark' al <html> si la preferencia
+  guardada en localStorage o la preferencia del sistema es dark.
+  NO usar type="module" aquí (sería diferido y causaría FOUC).
+-->
+<script is:inline>
+  (function () {
+    const stored = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (stored === 'dark' || (!stored && prefersDark)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  })();
+</script>

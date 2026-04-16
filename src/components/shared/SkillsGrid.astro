@@ -1,0 +1,49 @@
+---
+/**
+ * SkillsGrid.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Grid de tecnologías del stack. Animación de entrada escalonada con CSS.
+ */
+import type { Lang } from '@/utils/i18n';
+import { useTranslations } from '@/utils/i18n';
+import Badge from '@/components/ui/Badge.astro';
+
+interface Props {
+  lang:   Lang;
+  skills: string[];
+}
+
+const { lang, skills } = Astro.props;
+const t = useTranslations(lang);
+---
+
+<section
+  class="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8"
+  aria-labelledby="skills-heading"
+>
+  <!-- Encabezado -->
+  <div class="mb-10 text-center">
+    <h2
+      id="skills-heading"
+      class="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl"
+    >
+      {t('skills.title')}
+    </h2>
+    <p class="mt-2 text-sm text-[var(--text-muted)]">
+      {t('skills.subtitle')}
+    </p>
+  </div>
+
+  <!-- Grid con animación stagger -->
+  <ul
+    class="stagger-children flex flex-wrap justify-center gap-3"
+    role="list"
+    aria-label={t('skills.title')}
+  >
+    {skills.map((skill) => (
+      <li class="animate-fade-in-up">
+        <Badge label={skill} variant="subtle" />
+      </li>
+    ))}
+  </ul>
+</section>

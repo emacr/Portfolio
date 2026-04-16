@@ -1,0 +1,23 @@
+---
+/**
+ * src/pages/index.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Ruta raíz: redirige permanentemente al idioma por defecto (/es/).
+ * Solución: meta refresh + header Location para bots y navegadores.
+ */
+---
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=/es/" />
+    <link rel="canonical" href="https://emacr.github.io/es/" />
+    <title>Redirigiendo...</title>
+  </head>
+  <body>
+    <p>
+      Redirigiendo a
+      <a href="/es/">emacr.github.io/es/</a>
+    </p>
+  </body>
+</html>

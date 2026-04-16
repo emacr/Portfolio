@@ -1,0 +1,56 @@
+---
+/**
+ * src/pages/[lang]/projects/[slug].astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Página de case study individual.
+ * getStaticPaths() genera una ruta por cada archivo MDX en /es/ y /en/.
+ */
+import MainLayout       from '@/layouts/MainLayout.astro';
+import CaseStudyDetail  from '@/components/projects/CaseStudyDetail.astro';
+import { useTranslations, SUPPORTED_LANGS, type Lang } from '@/utils/i18n';
+import { getProjectsByLang, getProjectSlug, renderProject } from '@/utils/content';
+
+export async function getStaticPaths() {
+  // Genera las rutas para TODOS los idiomas
+  const paths = [];
+  for (const lang of SUPPORTED_LANGS) {
+    const projects = await getProjectsByLang(lang);
+    for (const project of projects) {
+      paths.push({
+        params: { lang, slug: getProjectSlug(project) },
+        props:  { project },
+      });
+    }
+  }
+  return paths;
+}
+
+const { lang }    = Astro.params as { lang: Lang };
+const { project } = Astro.props;
+const t           = useTranslations(lang);
+
+const { Content } = await renderProject(project);
+---
+
+<MainLayout
+  title={project.data.title}
+  description={project.data.description}
+  lang={lang}
+  ogImage={project.data.image.src}
+>
+  <!-- Botón volver -->
+  <div class="mx-auto max-w-4xl px-4 pt-8 sm:px-6 lg:px-8">
+    <a
+      href={`/${lang}/projects`}
+      class="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
+    >
+      ← {t('projects.back')}
+    </a>
+  </div>
+
+  <!-- Detalle del Case Study -->
+  <CaseStudyDetail project={project} lang={lang}>
+    <!-- El contenido MDX del archivo se renderiza aquí -->
+    <Content />
+  </CaseStudyDetail>
+</MainLayout>

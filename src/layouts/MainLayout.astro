@@ -1,0 +1,53 @@
+---
+/**
+ * MainLayout.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Layout base HTML5. Incluye BaseHead, Navbar y Footer.
+ * Todos los datos fluyen hacia abajo vía Props — sin estado global.
+ */
+import BaseHead from '@/components/layout/BaseHead.astro';
+import Navbar   from '@/components/layout/Navbar.astro';
+import Footer   from '@/components/layout/Footer.astro';
+import '@/styles/global.css';
+import type { Lang } from '@/utils/i18n';
+
+interface Props {
+  title:       string;
+  description: string;
+  lang:        Lang;
+  ogImage?:    string;
+  author?: {
+    name:     string;
+    role:     string;
+    siteUrl:  string;
+    github:   string;
+    linkedin: string;
+    imageUrl?: string;
+  };
+}
+
+const { title, description, lang, ogImage, author } = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang} class="">
+  <head>
+    <BaseHead
+      title={title}
+      description={description}
+      lang={lang}
+      ogImage={ogImage}
+      author={author}
+    />
+  </head>
+
+  <body class="min-h-dvh bg-[var(--bg)] text-[var(--text)] transition-colors duration-200">
+    <Navbar lang={lang} currentPath={Astro.url.pathname} />
+
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+
+    <Footer lang={lang} />
+  </body>
+</html>

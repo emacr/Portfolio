@@ -1,0 +1,10 @@
+# robots.txt — Portfolio de Emacr
+# Generado por: @astrojs/sitemap (sitemap-index.xml)
+# Documentación: https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+
+# El sitemap-index.xml es el entry point generado por @astrojs/sitemap.
+# Contiene referencias a todos los sitemaps por idioma (/es/ y /en/).
+Sitemap: https://emacr.github.io/sitemap-index.xml

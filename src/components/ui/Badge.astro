@@ -1,0 +1,25 @@
+---
+/**
+ * Badge.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Chip/tag atómico para mostrar tecnologías del stack.
+ */
+interface Props {
+  label: string;
+  variant?: 'default' | 'accent' | 'subtle';
+}
+
+const { label, variant = 'default' } = Astro.props;
+
+const variantClasses = {
+  default: 'bg-[var(--bg-elevated)] text-[var(--text-muted)] border border-[var(--border)]',
+  accent:  'bg-[var(--accent)] text-white border border-transparent',
+  subtle:  'bg-[var(--accent)]/10 text-[var(--accent)] border border-[var(--accent)]/20',
+} as const;
+---
+
+<span
+  class={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium font-mono tracking-wide transition-colors ${variantClasses[variant]}`}
+>
+  {label}
+</span>
