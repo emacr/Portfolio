@@ -5,12 +5,13 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 // ─── Site URL ────────────────────────────────────────────────────────────────
-// Configurado para GitHub Pages. Cambiar si el repositorio usa base path.
-const SITE_URL = 'https://emacr.github.io';
+// Configurado para GitHub Pages Project Page (/Portfolio/)
+const SITE_URL = 'https://emacr.github.io/Portfolio';
 
 export default defineConfig({
   output: 'static',
   site: SITE_URL,
+  base: '/Portfolio',
 
   // ─── i18n nativo de Astro ──────────────────────────────────────────────────
   i18n: {
