@@ -17,6 +17,7 @@ interface Props {
 const { lang, bio } = Astro.props;
 const t = useTranslations(lang);
 const { name, role, summary } = bio.data;
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
 <section
@@ -70,7 +71,7 @@ const { name, role, summary } = bio.data;
     <!-- CTAs -->
     <div class="animate-fade-in-up mt-10 flex flex-wrap gap-4" style="animation-delay:0.25s">
       <a
-        href={`/${lang}/projects`}
+        href={`${BASE_URL}${lang}/projects`}
         id="hero-cta-projects"
         class="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-[var(--accent)]/20 transition-all duration-200 hover:bg-[var(--accent-hover)] hover:shadow-lg hover:shadow-[var(--accent)]/30 hover:-translate-y-0.5"
       >
@@ -80,7 +81,7 @@ const { name, role, summary } = bio.data;
         </svg>
       </a>
       <a
-        href={`/${lang}/#contact`}
+        href={`${BASE_URL}${lang}/#contact`}
         id="hero-cta-contact"
         class="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-elevated)] px-5 py-2.5 text-sm font-semibold text-[var(--text)] transition-all duration-200 hover:border-[var(--accent)] hover:text-[var(--accent)] hover:-translate-y-0.5"
       >

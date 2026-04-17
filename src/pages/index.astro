@@ -5,19 +5,20 @@
  * Ruta raíz: redirige permanentemente al idioma por defecto (/es/).
  * Solución: meta refresh + header Location para bots y navegadores.
  */
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=/Portfolio/es/" />
-    <link rel="canonical" href="https://emacr.github.io/Portfolio/es/" />
+    <meta http-equiv="refresh" content={`0; url=${BASE_URL}es/`} />
+    <link rel="canonical" href={`https://emacr.github.io${BASE_URL}es/`} />
     <title>Redirigiendo...</title>
   </head>
   <body>
     <p>
       Redirigiendo a
-      <a href="/Portfolio/es/">emacr.github.io/Portfolio/es/</a>
+      <a href={`${BASE_URL}es/`}>emacr.github.io{BASE_URL}es/</a>
     </p>
   </body>
 </html>

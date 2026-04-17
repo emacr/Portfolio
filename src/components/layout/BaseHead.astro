@@ -34,6 +34,7 @@ const {
 } = Astro.props;
 
 const SITE_URL = 'https://emacr.github.io';
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const canonicalUrl = new URL(Astro.url.pathname, SITE_URL).href;
 
 // ─── hreflang alternates ─────────────────────────────────────────────────────
@@ -93,7 +94,7 @@ const fullTitle = `${title} | Emacr Portfolio`;
 <meta property="og:url"         content={canonicalUrl} />
 <meta property="og:title"       content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:image"       content={new URL(ogImage, SITE_URL).href} />
+<meta property="og:image"       content={new URL(`${BASE_URL}${ogImage.replace(/^\//, '')}`, SITE_URL).href} />
 <meta property="og:locale"      content={lang === 'es' ? 'es_MX' : 'en_US'} />
 <meta property="og:site_name"   content="Emacr Portfolio" />
 
@@ -101,15 +102,15 @@ const fullTitle = `${title} | Emacr Portfolio`;
 <meta name="twitter:card"        content="summary_large_image" />
 <meta name="twitter:title"       content={fullTitle} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image"       content={new URL(ogImage, SITE_URL).href} />
+<meta name="twitter:image"       content={new URL(`${BASE_URL}${ogImage.replace(/^\//, '')}`, SITE_URL).href} />
 
 <!-- ─── hreflang (SEO multilenguaje) ─────────────────────────────────────── -->
 <link rel="alternate" hreflang={lang}    href={selfHref} />
 <link rel="alternate" hreflang={altLang} href={altHref} />
-<link rel="alternate" hreflang="x-default" href={new URL('/es/', SITE_URL).href} />
+<link rel="alternate" hreflang="x-default" href={new URL(`${BASE_URL}es/`, SITE_URL).href} />
 
 <!-- ─── Favicon ───────────────────────────────────────────────────────────── -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href={`${BASE_URL}favicon.svg`} />
 
 <!-- ─── JSON-LD Structured Data ───────────────────────────────────────────── -->
 <!--

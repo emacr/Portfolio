@@ -21,6 +21,7 @@ const { project, lang } = Astro.props;
 const t = useTranslations(lang);
 const { title, description, image, stack, links, featured } = project.data;
 const slug = getProjectSlug(project);
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
 <article
@@ -36,7 +37,7 @@ const slug = getProjectSlug(project);
 
   <!-- Imagen del proyecto -->
   <a
-    href={`/${lang}/projects/${slug}`}
+    href={`${BASE_URL}${lang}/projects/${slug}`}
     class="block overflow-hidden"
     tabindex="-1"
     aria-hidden="true"
@@ -58,7 +59,7 @@ const slug = getProjectSlug(project);
     <!-- Título -->
     <h3 class="text-lg font-semibold leading-tight text-[var(--text)]">
       <a
-        href={`/${lang}/projects/${slug}`}
+        href={`${BASE_URL}${lang}/projects/${slug}`}
         class="hover:text-[var(--accent)] transition-colors duration-200"
       >
         {title}
@@ -83,7 +84,7 @@ const slug = getProjectSlug(project);
     <!-- Links -->
     <div class="mt-2 flex items-center justify-between border-t border-[var(--border)] pt-4">
       <a
-        href={`/${lang}/projects/${slug}`}
+        href={`${BASE_URL}${lang}/projects/${slug}`}
         class="text-sm font-medium text-[var(--accent)] transition-colors hover:text-[var(--accent-hover)]"
       >
         {t('projects.view_case')}

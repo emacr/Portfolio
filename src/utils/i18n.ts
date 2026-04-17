@@ -146,12 +146,18 @@ export function useTranslations(lang: Lang) {
   };
 }
 
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
 /**
  * Extrae el idioma de la URL.
  * Ejemplo: '/es/projects/mi-proyecto' → 'es'
  */
 export function getLangFromUrl(url: URL): Lang {
-  const [, lang] = url.pathname.split('/');
+  const path = url.pathname.startsWith(BASE_URL) 
+    ? url.pathname.slice(BASE_URL.length) 
+    : url.pathname.replace(/^\//, '');
+
+  const [lang] = path.split('/').filter(Boolean);
   if (SUPPORTED_LANGS.includes(lang as Lang)) {
     return lang as Lang;
   }
@@ -163,10 +169,14 @@ export function getLangFromUrl(url: URL): Lang {
  * Ejemplo: '/es/projects/slug' → '/en/projects/slug'
  */
 export function getAlternateUrl(url: URL, targetLang: Lang): string {
-  const parts = url.pathname.split('/').filter(Boolean);
-  const [currentLang, ...rest] = parts;
-  if (SUPPORTED_LANGS.includes(currentLang as Lang)) {
-    return `/${targetLang}/${rest.join('/')}`;
+  const path = url.pathname.startsWith(BASE_URL) 
+    ? url.pathname.slice(BASE_URL.length) 
+    : url.pathname.replace(/^\//, '');
+  
+  const parts = path.split('/').filter(Boolean);
+  if (parts.length > 0 && SUPPORTED_LANGS.includes(parts[0] as Lang)) {
+    parts[0] = targetLang;
+    return `${BASE_URL}${parts.join('/')}`;
   }
-  return `/${targetLang}${url.pathname}`;
+  return `${BASE_URL}${targetLang}/${path}`;
 }

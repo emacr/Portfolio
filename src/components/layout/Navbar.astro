@@ -18,10 +18,12 @@ interface Props {
 const { lang, currentPath } = Astro.props;
 const t = useTranslations(lang);
 
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+
 const navLinks = [
-  { href: `/${lang}/`,         label: t('nav.home'),     key: 'home' },
-  { href: `/${lang}/projects`, label: t('nav.projects'), key: 'projects' },
-  { href: `/${lang}/#contact`, label: t('nav.contact'),  key: 'contact' },
+  { href: `${BASE_URL}${lang}/`,         label: t('nav.home'),     key: 'home' },
+  { href: `${BASE_URL}${lang}/projects`, label: t('nav.projects'), key: 'projects' },
+  { href: `${BASE_URL}${lang}/#contact`, label: t('nav.contact'),  key: 'contact' },
 ];
 
 function isActive(href: string): boolean {
@@ -42,7 +44,7 @@ function isActive(href: string): boolean {
   >
     <!-- Logo / Nombre -->
     <a
-      href={`/${lang}/`}
+      href={`${BASE_URL}${lang}/`}
       class="flex items-center gap-2 font-semibold tracking-tight text-[var(--text)] transition-opacity hover:opacity-80"
       aria-label="Ir al inicio"
     >
@@ -84,7 +86,7 @@ function isActive(href: string): boolean {
       <LanguageSelector currentLang={lang} />
       <ThemeToggle />
       <a
-        href="/cv-emacr.pdf"
+        href={`${BASE_URL}cv-emacr.pdf`}
         download
         id="btn-download-cv"
         class="hidden items-center gap-1.5 rounded-lg bg-[var(--accent)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--accent-hover)] hover:shadow-md hover:shadow-[var(--accent)]/20 sm:flex"

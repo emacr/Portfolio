@@ -30,6 +30,7 @@ const { project } = Astro.props;
 const t           = useTranslations(lang);
 
 const { Content } = await renderProject(project);
+const BASE_URL = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
 <MainLayout
@@ -41,7 +42,7 @@ const { Content } = await renderProject(project);
   <!-- Botón volver -->
   <div class="mx-auto max-w-4xl px-4 pt-8 sm:px-6 lg:px-8">
     <a
-      href={`/${lang}/projects`}
+      href={`${BASE_URL}${lang}/projects`}
       class="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] transition-colors hover:text-[var(--accent)]"
     >
       ← {t('projects.back')}
