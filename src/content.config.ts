@@ -23,10 +23,12 @@ const projectsCollection = defineCollection({
   schema: ({ image }) =>
     z.object({
       title:       z.string().min(1),
-      description: z.string().min(1).max(300),
+      description: z.string().min(1).max(500),
       date:        z.coerce.date(),
       // image() de Astro garantiza que el asset existe y se optimizará a WebP
       image:       image(),
+      // images: galería adicional para el carrusel (opcional)
+      images:      z.array(image()).optional(),
       stack:       z.array(z.string()).min(1),
       links: z.object({
         demo:   z.string().url().optional(),

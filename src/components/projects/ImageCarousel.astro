@@ -1,0 +1,282 @@
+---
+/**
+ * ImageCarousel.astro
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Carrusel de imágenes con flechas de navegación y modal de zoom.
+ * Funciona con JS vanilla en el cliente (zero-framework).
+ * Props:
+ *   images  – array de ImageMetadata (campo `image()` de Astro)
+ *   title   – nombre del proyecto (para el alt text)
+ *   carouselId – identificador único para evitar colisiones entre carruseles
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  images: ImageMetadata[];
+  title: string;
+  carouselId: string;
+}
+
+const { images, title, carouselId } = Astro.props;
+const hasMultiple = images.length > 1;
+---
+
+<div class="relative group/carousel overflow-hidden rounded-t-2xl" id={`carousel-${carouselId}`}>
+  <!-- Track de imágenes -->
+  <div
+    class="flex transition-transform duration-500 ease-in-out will-change-transform"
+    data-track={`track-${carouselId}`}
+    style="transform: translateX(0%)"
+  >
+    {images.map((img, idx) => (
+      <div class="min-w-full relative">
+        <Image
+          src={img}
+          alt={`${title} - imagen ${idx + 1}`}
+          width={720}
+          height={405}
+          format="webp"
+          quality={85}
+          class="h-48 w-full object-cover select-none"
+          loading={idx === 0 ? 'eager' : 'lazy'}
+        />
+      </div>
+    ))}
+  </div>
+
+  <!-- Botón ampliar -->
+  <button
+    type="button"
+    class="absolute top-2 right-2 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity duration-200 group-hover/carousel:opacity-100 hover:bg-black/70"
+    aria-label={`Ampliar imágenes de ${title}`}
+    data-zoom-btn={carouselId}
+    data-current="0"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+    </svg>
+  </button>
+
+  {hasMultiple && (
+    <>
+      <!-- Flecha izquierda -->
+      <button
+        type="button"
+        class="absolute left-2 top-1/2 z-20 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity duration-200 group-hover/carousel:opacity-100 hover:bg-black/70 disabled:opacity-20"
+        aria-label="Imagen anterior"
+        data-prev={carouselId}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <!-- Flecha derecha -->
+      <button
+        type="button"
+        class="absolute right-2 top-1/2 z-20 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white opacity-0 transition-opacity duration-200 group-hover/carousel:opacity-100 hover:bg-black/70 disabled:opacity-20"
+        aria-label="Siguiente imagen"
+        data-next={carouselId}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+
+      <!-- Indicadores de puntos -->
+      <div class="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex gap-1.5" data-dots={carouselId}>
+        {images.map((_, idx) => (
+          <button
+            type="button"
+            class={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${idx === 0 ? 'bg-white w-3' : 'bg-white/50'}`}
+            aria-label={`Ir a imagen ${idx + 1}`}
+            data-dot-idx={idx}
+            data-dot-carousel={carouselId}
+          />
+        ))}
+      </div>
+    </>
+  )}
+</div>
+
+<!-- Modal de zoom -->
+<div
+  id={`modal-${carouselId}`}
+  class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm"
+  role="dialog"
+  aria-modal="true"
+  aria-label={`Galería de imágenes: ${title}`}
+>
+  <div class="relative flex h-full w-full items-center justify-center px-4">
+    <!-- Track modal -->
+    <div class="relative max-h-[90vh] max-w-5xl w-full overflow-hidden rounded-xl">
+      <div
+        class="flex transition-transform duration-500 ease-in-out"
+        data-modal-track={carouselId}
+        style="transform: translateX(0%)"
+      >
+        {images.map((img, idx) => (
+          <div class="min-w-full flex items-center justify-center bg-transparent">
+            <Image
+              src={img}
+              alt={`${title} - imagen ${idx + 1}`}
+              width={1200}
+              height={675}
+              format="webp"
+              quality={90}
+              class="max-h-[85vh] w-auto max-w-full rounded-xl object-contain"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Cerrar modal -->
+    <button
+      type="button"
+      class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+      aria-label="Cerrar galería"
+      data-modal-close={carouselId}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+
+    {hasMultiple && (
+      <>
+        <!-- Flecha izquierda modal -->
+        <button
+          type="button"
+          class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+          aria-label="Imagen anterior"
+          data-modal-prev={carouselId}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+
+        <!-- Flecha derecha modal -->
+        <button
+          type="button"
+          class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+          aria-label="Siguiente imagen"
+          data-modal-next={carouselId}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+
+        <!-- Contador modal -->
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white" data-modal-counter={carouselId}>
+          1 / {images.length}
+        </div>
+      </>
+    )}
+  </div>
+</div>
+
+<script define:vars={{ carouselId, totalImages: images.length }}>
+  (function () {
+    let current = 0;
+
+    // ─── helpers ─────────────────────────────────────────────────────────────
+    function q(selector, context = document) { return context.querySelector(selector); }
+
+    const container   = q(`#carousel-${carouselId}`);
+    if (!container) return;
+
+    const track       = q(`[data-track="track-${carouselId}"]`, container);
+    const modalEl     = q(`#modal-${carouselId}`);
+    const modalTrack  = q(`[data-modal-track="${carouselId}"]`, modalEl);
+    const counter     = q(`[data-modal-counter="${carouselId}"]`, modalEl);
+    const dotsWrap    = q(`[data-dots="${carouselId}"]`, container);
+
+    // Teletransporte: Mover el modal al body para evitar que sea recortado 
+    // por el overflow:hidden o transform del card padre.
+    if (modalEl && modalEl.parentElement !== document.body) {
+      document.body.appendChild(modalEl);
+    }
+
+    function goTo(idx) {
+      current = (idx + totalImages) % totalImages;
+      if (track)      track.style.transform      = `translateX(-${current * 100}%)`;
+      if (modalTrack) modalTrack.style.transform = `translateX(-${current * 100}%)`;
+      if (counter)    counter.textContent        = `${current + 1} / ${totalImages}`;
+      
+      // dots
+      if (dotsWrap) {
+        dotsWrap.querySelectorAll('button').forEach((dot, i) => {
+          dot.classList.toggle('bg-white', i === current);
+          dot.classList.toggle('w-3',      i === current);
+          dot.classList.toggle('bg-white/50', i !== current);
+        });
+      }
+    }
+
+    // ─── dots ────────────────────────────────────────────────────────────────
+    container.querySelectorAll(`[data-dot-carousel="${carouselId}"]`).forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        goTo(Number(dot.dataset.dotIdx));
+      });
+    });
+
+    // ─── prev / next (card) ──────────────────────────────────────────────────
+    const prevBtn = q(`[data-prev="${carouselId}"]`, container);
+    const nextBtn = q(`[data-next="${carouselId}"]`, container);
+    if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
+
+    // ─── zoom button ─────────────────────────────────────────────────────────
+    const zoomBtn = q(`[data-zoom-btn="${carouselId}"]`, container);
+    if (zoomBtn && modalEl) {
+      zoomBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modalEl.classList.remove('hidden');
+        modalEl.classList.add('flex');
+        // Pequeño delay para asegurar que el cambio de clase se procese
+        setTimeout(() => goTo(current), 10);
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    // ─── close modal ─────────────────────────────────────────────────────────
+    const closeBtn = q(`[data-modal-close="${carouselId}"]`, modalEl);
+    function closeModal() {
+      if (modalEl) {
+        modalEl.classList.add('hidden');
+        modalEl.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+    }
+    if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closeModal(); });
+    
+    if (modalEl) {
+      modalEl.addEventListener('click', (e) => {
+        // Solo cerrar si el click es en el fondo o en el contenedor general del modal
+        if (e.target === modalEl || e.target.classList.contains('backdrop-blur-sm') || e.target.parentElement === modalEl) {
+          closeModal();
+        }
+      });
+    }
+
+    // ─── modal prev / next ───────────────────────────────────────────────────
+    const mPrev = q(`[data-modal-prev="${carouselId}"]`, modalEl);
+    const mNext = q(`[data-modal-next="${carouselId}"]`, modalEl);
+    if (mPrev) mPrev.addEventListener('click', (e) => { e.stopPropagation(); goTo(current - 1); });
+    if (mNext) mNext.addEventListener('click', (e) => { e.stopPropagation(); goTo(current + 1); });
+
+    // ─── keyboard navigation ──────────────────────────────────────────────────
+    document.addEventListener('keydown', (e) => {
+      if (!modalEl || modalEl.classList.contains('hidden')) return;
+      if (e.key === 'ArrowLeft')  goTo(current - 1);
+      if (e.key === 'ArrowRight') goTo(current + 1);
+      if (e.key === 'Escape')     closeModal();
+    });
+  })();
+</script>

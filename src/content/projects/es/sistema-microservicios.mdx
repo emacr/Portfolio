@@ -1,47 +1,32 @@
 ---
-title: "Sistema de Microservicios E-Commerce"
-description: "Plataforma distribuida de alta disponibilidad para comercio electrónico, diseñada para escalar a 100K usuarios concurrentes con zero-downtime deployments."
-date: 2024-03-15
-image: "../../../assets/arch-microservices.png"
+title: "Automatización de Pedidos en Restaurante"
+description: "Automatización de pedidos de clientes provenientes de la plataforma de WhatsApp por medio de la herramienta N8N para un restaurante de comida rápida."
+date: 2024-06-01
+image: "../../../assets/alasB1.png"
+images:
+  - "../../../assets/alasB1.png"
+  - "../../../assets/alasB2.png"
 stack:
-  - "Node.js"
-  - "TypeScript"
-  - "Kubernetes"
+  - "Chatwoot"
+  - "n8n"
+  - "Evolution API"
   - "PostgreSQL"
-  - "RabbitMQ"
-  - "Redis"
-  - "Docker"
-  - "Prometheus"
+  - "ChatGPT"
+  - "DeepSeek"
 links:
-  github: "https://github.com/emacr/ecommerce-microservices"
+  github: "https://github.com/emacr/n8nBackup"
 featured: true
-architectureDiagram: "arch-microservices.png"
 nfr:
-  - "Disponibilidad: SLA del 99.95% (< 4.38h downtime/año)"
-  - "Latencia P99 < 200ms para operaciones de lectura bajo carga de 50K RPS"
-  - "Escalabilidad horizontal automática (HPA) con métricas custom de Kubernetes"
-  - "MTTR < 15 minutos ante fallos de un servicio individual"
-  - "Seguridad: Autenticación JWT + mTLS entre servicios internos"
-  - "Observabilidad: Trazabilidad distribuida end-to-end con OpenTelemetry"
-adrs:
-  - title: "ADR-001: Mensajería asíncrona con RabbitMQ sobre Kafka"
-    context: "El sistema necesitaba comunicación desacoplada entre Order Service y Notification Service. Se evaluaron RabbitMQ y Kafka para el volumen de mensajes proyectado."
-    decision: "Se eligió RabbitMQ con colas duraderas y dead-letter queues. El volumen proyectado (< 5K msg/s) no justificaba la complejidad operacional de Kafka y su curva de aprendizaje del equipo."
-    consequences: "Menor complejidad de operación y despliegue. Trade-off: si el volumen crece 10x, se requerirá migrar a Kafka. Se documentó el trigger de migración con métricas."
-  - title: "ADR-002: PostgreSQL por servicio vs. base de datos compartida"
-    context: "Se debatió entre una BD compartida (más simple) y BD por microservicio (Database-per-Service pattern) para garantizar el desacoplamiento real entre dominios."
-    decision: "Cada microservicio tiene su propia instancia de PostgreSQL en un namespace de Kubernetes dedicado. La comunicación cross-servicio se hace exclusivamente por API/eventos."
-    consequences: "Fuerte aislamiento de fallos y posibilidad de escalar schemas independientemente. Costo: las transacciones distribuidas requieren Saga pattern, aumentando la complejidad de rollback."
-  - title: "ADR-003: API Gateway con Kong sobre implementación custom"
-    context: "El API Gateway necesitaba manejar rate limiting, autenticación OAuth2, y logging centralizado. Se evaluó construirlo en Express.js vs. usar Kong Gateway."
-    decision: "Se adoptó Kong Gateway con plugins declarativos. La madurez del ecosistema y plugins existentes (rate-limiting, jwt, prometheus) reducía el tiempo de desarrollo en ~3 sprints."
-    consequences: "Velocidad de entrega y robustez probada en producción. Dependencia de un vendor open-source gestionada con helm charts versionados para reproducibilidad."
+  - "Automatización completa del flujo de pedidos desde WhatsApp hasta confirmación de cocina"
+  - "Integración en tiempo real entre Evolution API, n8n y Chatwoot"
+  - "Respuestas automáticas por IA en menos de 2 segundos"
+  - "Persistencia de pedidos en PostgreSQL con historial de clientes"
 ---
 
 ## Contexto del Proyecto
 
-Este proyecto resolvió el problema de escalabilidad de una plataforma monolítica que alcanzaba sus límites durante eventos de alta demanda (Black Friday, lanzamientos de productos). La migración a microservicios permitió escalar servicios críticos de forma independiente.
+Este proyecto resolvió la sobrecarga operativa de un restaurante de comida rápida que recibía pedidos por WhatsApp de forma manual, lo que generaba errores y tiempos de respuesta lentos. La automatización con n8n permitió gestionar todos los pedidos de manera ordenada y eficiente.
 
-## Desafíos Técnicos Clave
+## Flujo de Automatización
 
-El principal reto fue la **migración incremental** del monolito, usando el patrón Strangler Fig para extraer servicios uno a uno sin interrumpir operaciones de producción durante 6 meses.
+El cliente envía su pedido por WhatsApp → Evolution API captura el mensaje → n8n procesa y valida el pedido con IA (ChatGPT/DeepSeek) → el pedido se registra en PostgreSQL → Chatwoot notifica al equipo del restaurante y confirma automáticamente al cliente.

@@ -1,42 +1,34 @@
 ---
-title: "Pipeline de Datos en Tiempo Real"
-description: "Infraestructura de ingesta y procesamiento de datos para analítica en tiempo real, procesando 2M eventos/día con latencia de extremo a extremo < 1 segundo."
-date: 2023-11-20
-image: "../../../assets/arch-pipeline.png"
+title: "Aplicación Móvil para Gestión de Pedidos"
+description: "Aplicación móvil para un restaurante donde diferentes perfiles (cocina, supervisor, mensajero) tendrán acceso a la aplicación (con restricciones según rol) para poder gestionar cada uno a su manera los diferentes pedidos que fueron procesados por medio de la herramienta N8N para la entrega final al cliente."
+date: 2024-04-01
+image: "../../../assets/cocina1.png"
+images:
+  - "../../../assets/cocina1.png"
+  - "../../../assets/cocina2.png"
+  - "../../../assets/cocina3.png"
+  - "../../../assets/cocina4.png"
 stack:
-  - "Apache Kafka"
-  - "Python"
-  - "Apache Flink"
+  - "FlutterFlow"
+  - "API REST"
   - "PostgreSQL"
-  - "MinIO"
-  - "dbt"
-  - "Metabase"
-  - "Terraform"
+  - "Dart"
 links:
-  github: "https://github.com/emacr/realtime-pipeline"
-featured: false
-architectureDiagram: "arch-pipeline.png"
+  github: "https://github.com/emacr/alasBuenasBackUpn8n"
+featured: true
 nfr:
-  - "Throughput: 2M eventos/día con picos de 5K eventos/segundo"
-  - "Latencia end-to-end < 1 segundo desde ingesta hasta dashboard"
-  - "Durabilidad de datos: replicación Kafka 3x, retención 30 días"
-  - "Exactamente-una-vez (exactly-once semantics) en el procesamiento"
-  - "Backpressure automático para absorber picos de 3x el tráfico nominal"
-adrs:
-  - title: "ADR-001: Flink sobre Spark Streaming para procesamiento stateful"
-    context: "El pipeline requería window operations complejas y estado por-sesión. Se compararon Apache Spark Structured Streaming y Apache Flink para stateful stream processing."
-    decision: "Se eligió Apache Flink por su modelo de programación orientado a streams (no micro-batches), soporte nativo de exactly-once semantics, y mejor rendimiento en operaciones stateful con RocksDB como backend."
-    consequences: "Menor latencia (true streaming vs. micro-batches de 1s en Spark). Curva de aprendizaje más pronunciada para el equipo. Se invirtió en 2 semanas de enablement antes de producción."
-  - title: "ADR-002: MinIO como Data Lake sobre S3 compatible"
-    context: "Los datos procesados necesitaban un storage escalable económico. Se evaluó AWS S3, Google Cloud Storage y MinIO self-hosted para el data lake."
-    decision: "Se optó por MinIO self-hosted en bare-metal para control de costos y data sovereignty. La API S3-compatible permitió usar el mismo ecosistema de herramientas (dbt, Metabase) sin cambios."
-    consequences: "Reducción de costos de almacenamiento en ~70% vs. S3 managed. Responsabilidad adicional de operación y backup, mitigada con restic + rotación automática."
+  - "Control de acceso por rol: cocina, supervisor y mensajero con vistas diferenciadas"
+  - "Sincronización en tiempo real de pedidos procesados por n8n"
+  - "Interfaz intuitiva adaptada al flujo de trabajo de cada perfil"
+  - "Persistencia segura en PostgreSQL con segregación de datos por rol"
 ---
 
 ## Contexto del Proyecto
 
-La necesidad surgió de un cliente retail que tomaba decisiones de negocio con datos del día anterior. Este pipeline eliminó ese lag, permitiendo ajustes de precio y stock en tiempo real basados en comportamiento de compra actual.
+Esta aplicación complementa el flujo de automatización de pedidos por WhatsApp, proporcionando una interfaz visual para que el personal del restaurante gestione los pedidos en tiempo real según su rol dentro de la operación.
 
-## Impacto en el Negocio
+## Roles y Funcionalidades
 
-La analítica en tiempo real redujo el tiempo de respuesta ante anomalías de inventario de **4 horas a 45 segundos**, mejorando la conversión en un 12% en los primeros 30 días.
+- **Cocina**: Visualiza pedidos entrantes y marca preparación como completada.
+- **Supervisor**: Monitorea el estado de todos los pedidos y gestiona incidencias.
+- **Mensajero**: Ve los pedidos listos para entrega con datos del cliente.
