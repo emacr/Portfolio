@@ -6,7 +6,6 @@
  */
 import type { Lang } from '@/utils/i18n';
 import { useTranslations } from '@/utils/i18n';
-import Badge from '@/components/ui/Badge.astro';
 
 interface Props {
   lang:   Lang;
@@ -15,6 +14,24 @@ interface Props {
 
 const { lang, skills } = Astro.props;
 const t = useTranslations(lang);
+
+const skillIcons: Record<string, string> = {
+  "n8n": "https://api.iconify.design/simple-icons/n8n.svg?color=%23EA4335",
+  "React": "https://api.iconify.design/logos/react.svg",
+  "Astro": "https://api.iconify.design/logos/astro-icon.svg",
+  "Python": "https://api.iconify.design/logos/python.svg",
+  "FastAPI": "https://api.iconify.design/devicon/fastapi.svg",
+  "VirtualBox": "https://api.iconify.design/simple-icons/virtualbox.svg?color=%23183A61",
+  "Linux": "https://api.iconify.design/logos/linux-tux.svg",
+  "Git": "https://api.iconify.design/logos/git-icon.svg",
+  "GitHub": "https://api.iconify.design/mdi/github.svg?color=white",
+  "SQL Server": "https://api.iconify.design/simple-icons/microsoftsqlserver.svg?color=%23CC2927",
+  "PostgreSQL": "https://api.iconify.design/logos/postgresql.svg",
+  "Airtable": "https://api.iconify.design/logos/airtable.svg",
+  "FlutterFlow": "https://api.iconify.design/logos/flutter.svg",
+  "ClickUp": "https://api.iconify.design/simple-icons/clickup.svg?color=%237B68EE",
+  "Chatwoot": "https://api.iconify.design/simple-icons/chatwoot.svg?color=%231F93FF"
+};
 ---
 
 <section
@@ -36,13 +53,24 @@ const t = useTranslations(lang);
 
   <!-- Grid con animación stagger -->
   <ul
-    class="stagger-children flex flex-wrap justify-center gap-3"
+    class="stagger-children grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 justify-center max-w-4xl mx-auto"
     role="list"
     aria-label={t('skills.title')}
   >
     {skills.map((skill) => (
-      <li class="animate-fade-in-up">
-        <Badge label={skill} variant="subtle" />
+      <li class="animate-fade-in-up flex flex-col items-center justify-center p-6 rounded-xl hover:bg-[var(--bg-muted)] transition-colors gap-4 group">
+        {skillIcons[skill] && (
+          <img 
+            src={skillIcons[skill]} 
+            alt={`${skill} icon`} 
+            class="w-14 h-14 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-md"
+            loading="lazy" 
+            width="56" 
+            height="56" 
+            decoding="async"
+          />
+        )}
+        <span class="text-sm font-medium text-[var(--text-muted)] group-hover:text-[var(--text)] transition-colors">{skill}</span>
       </li>
     ))}
   </ul>
