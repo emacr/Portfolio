@@ -62,12 +62,15 @@ html {
   background-color: var(--bg);
   color: var(--text);
   transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body {
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 /* ─── Utilidades de accesibilidad ────────────────────────────────────────────── */

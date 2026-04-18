@@ -34,11 +34,10 @@ const hasMultiple = images.length > 1;
         <Image
           src={img}
           alt={`${title} - imagen ${idx + 1}`}
-          width={720}
-          height={405}
+          width={800}
           format="webp"
           quality={85}
-          class="h-48 w-full object-cover select-none"
+          class="h-48 w-full object-contain bg-[var(--bg-elevated)] select-none"
           loading={idx === 0 ? 'eager' : 'lazy'}
         />
       </div>
@@ -121,8 +120,7 @@ const hasMultiple = images.length > 1;
             <Image
               src={img}
               alt={`${title} - imagen ${idx + 1}`}
-              width={1200}
-              height={675}
+              width={1600}
               format="webp"
               quality={90}
               class="max-h-[85vh] w-auto max-w-full rounded-xl object-contain"

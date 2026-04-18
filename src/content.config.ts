@@ -31,8 +31,10 @@ const projectsCollection = defineCollection({
       images:      z.array(image()).optional(),
       stack:       z.array(z.string()).min(1),
       links: z.object({
-        demo:   z.string().url().optional(),
-        github: z.string().url().optional(),
+        demo:           z.string().url().optional(),
+        github:         z.string().url().optional(),
+        githubFrontend: z.string().url().optional(),
+        githubBackend:  z.string().url().optional(),
       }),
       featured: z.boolean().default(false),
       // Campos opcionales para Case Study

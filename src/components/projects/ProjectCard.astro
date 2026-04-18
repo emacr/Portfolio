@@ -56,6 +56,11 @@ function getToolLogo(tech: string): { src: string; label: string } | null {
     'git':           'https://cdn.simpleicons.org/git/F05032',
     'github':        'https://cdn.simpleicons.org/github/ffffff',
     'sql server':    'https://cdn.simpleicons.org/microsoftsqlserver/CC2927',
+    'java':          'https://cdn.simpleicons.org/java/ED8B00',
+    'mysql':         'https://cdn.simpleicons.org/mysql/4479A1',
+    'c#':            'https://cdn.simpleicons.org/csharp/239120',
+    '.net':          'https://cdn.simpleicons.org/dotnet/512BD4',
+    'maui':          'https://cdn.simpleicons.org/dotnet/512BD4',
     'airtable':      'https://cdn.simpleicons.org/airtable/18BFFF',
     'clickup':       'https://cdn.simpleicons.org/clickup/7B68EE',
   };
@@ -143,9 +148,9 @@ const useLogos = stackWithLogos.length >= 2;
     </div>
 
     <!-- Links -->
-    {(links.demo || links.github) && (
+    {(links.demo || links.github || links.githubFrontend || links.githubBackend) && (
       <div class="mt-2 flex items-center justify-end border-t border-[var(--border)] pt-4">
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
           {links.demo && (
             <a
               href={links.demo}
@@ -166,6 +171,28 @@ const useLogos = stackWithLogos.length >= 2;
               aria-label={`${t('projects.code')} de ${title}`}
             >
               {t('projects.code')} ↗
+            </a>
+          )}
+          {links.githubFrontend && (
+            <a
+              href={links.githubFrontend}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+              aria-label={`${t('projects.code_front')} de ${title}`}
+            >
+              {t('projects.code_front')} ↗
+            </a>
+          )}
+          {links.githubBackend && (
+            <a
+              href={links.githubBackend}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+              aria-label={`${t('projects.code_back')} de ${title}`}
+            >
+              {t('projects.code_back')} ↗
             </a>
           )}
         </div>
