@@ -85,20 +85,42 @@ function isActive(href: string): boolean {
     <div class="flex items-center gap-2">
       <LanguageSelector currentLang={lang} />
       <ThemeToggle />
-      <a
-        href={`${BASE_URL}cv-emacr.pdf`}
-        download
-        id="btn-download-cv"
-        class="hidden items-center gap-1.5 rounded-lg bg-[var(--accent)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--accent-hover)] hover:shadow-md hover:shadow-[var(--accent)]/20 sm:flex"
-        aria-label={t('nav.download_cv')}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        CV
-      </a>
+      <div class="group relative hidden sm:flex">
+        <button
+          class="flex items-center gap-1.5 rounded-lg bg-[var(--accent)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 shadow-sm hover:shadow-md hover:shadow-[var(--accent)]/20 cursor-default"
+          aria-label={t('nav.download_cv')}
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          CV
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="opacity-80 transition-transform duration-200 group-hover:-rotate-180">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <div class="absolute right-0 top-full pt-1.5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right group-hover:translate-y-0 translate-y-1 z-50">
+          <div class="flex flex-col overflow-hidden rounded-md border border-[var(--border)] bg-[var(--bg)] shadow-lg min-w-[130px]">
+            <a
+              href={`${BASE_URL}manuel_carranza_2026_en_CV.pdf`}
+              download="manuel_carranza_2026_en_CV.pdf"
+              class="px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:bg-[var(--accent)] hover:text-white transition-colors"
+            >
+              English
+            </a>
+            <a
+              href={`${BASE_URL}manuel_carranza_2026_es_CV.pdf`}
+              download="manuel_carranza_2026_es_CV.pdf"
+              class="px-4 py-2.5 text-sm font-medium text-[var(--text)] hover:bg-[var(--accent)] hover:text-white transition-colors border-t border-[var(--border)]"
+            >
+              Español
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 </header>
